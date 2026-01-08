@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programme de Jeûne 21 Jours - 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2C3E50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7F8C8D;
+            font-size: 1.2em;
+        }
+
+        .progress-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: #ECF0F1;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27AE60, #2ECC71);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .day-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .day-card.completed {
+            background: linear-gradient(135deg, #27AE60, #2ECC71);
+            color: white;
+        }
+
+        .day-card.completed .day-number {
+            color: white;
+        }
+
+        .day-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2980B9;
+            margin-bottom: 5px;
+        }
+
+        .day-theme {
+            font-size: 0.9em;
+            color: #7F8C8D;
+        }
+
+        .day-card.completed .day-theme {
+            color: white;
+        }
+
+        .check-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            margin: 50px auto;
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #7F8C8D;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #2C3E50;
+        }
+
+        .modal-header {
+            margin-bottom: 30px;
+        }
+
+        .modal-day-number {
+            color: #2980B9;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .modal-theme {
+            color: #2C3E50;
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2C3E50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-content {
+            color: #34495E;
+            line-height: 1.8;
+            padding: 15px;
+            background: #F8F9FA;
+            border-radius: 10px;
+            border-left: 4px solid #2980B9;
+        }
+
+        .section-content.rappel {
+            background: #FFF3E0;
+            border-left-color: #E67E22;
+            color: #D35400;
+        }
+
+        .section-content.versets {
+            background: #E8F5E9;
+            border-left-color: #27AE60;
+            color: #27AE60;
+            font-style: italic;
+        }
+
+        .video-link {
+            display: inline-block;
+            background: #E74C3C;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        .video-link:hover {
+            background: #C0392B;
+        }
+
+        .notes-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #ECF0F1;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #ECF0F1;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1em;
+            resize: vertical;
+        }
+
+        .notes-textarea:focus {
+            outline: none;
+            border-color: #2980B9;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #27AE60, #2ECC71);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-secondary {
+            background: #ECF0F1;
+            color: #2C3E50;
+        }
+
+        .btn-secondary:hover {
+            background: #BDC3C7;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #2980B9;
+        }
+
+        .stat-label {
+            color: #7F8C8D;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .days-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .modal-content {
+                padding: 20px;
+                margin: 20px auto;
+            }
+
+            .modal-theme {
+                font-size: 1.5em;
+            }
+        }
+
+        .export-btn {
+            background: #3498DB;
+            color: white;
+        }
+
+        .export-btn:hover {
+            background: #2980B9;
+        }
+
+        .day-card.customizable {
+            border: 2px dashed #E67E22;
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+        }
+
+        .day-card.customizable:hover {
+            border-color: #D35400;
+        }
+
+        .customizable-badge {
+            background: #E67E22;
+            color: white;
+            font-size: 0.7em;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .custom-input-section {
+            background: #FFF3E0;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px dashed #E67E22;
+            margin-bottom: 20px;
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #E67E22;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            margin-top: 10px;
+            resize: vertical;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: #D35400;
+            background: white;
+        }
+
+        .resources-section {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #27AE60;
+        }
+
+        .resource-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .resource-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .resource-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .youtube-btn {
+            background: #FF0000;
+            color: white;
+        }
+
+        .spotify-btn {
+            background: #1DB954;
+            color: white;
+        }
+
+        .save-custom-btn {
+            background: #E67E22;
+            color: white;
+        }
+
+        .save-custom-btn:hover {
+            background: #D35400;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🙏 Programme de Jeûne 21 Jours</h1>
+            <p>Débuter l'année 2026 avec une fondation spirituelle solide</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number" id="completedDays">0</div>
+                <div class="stat-label">Jours accomplis</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="remainingDays">21</div>
+                <div class="stat-label">Jours restants</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="progressPercent">0%</div>
+                <div class="stat-label">Progression</div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <h3 style="margin-bottom: 15px; color: #2C3E50;">📊 Votre progression</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <!-- Days Grid -->
+        <div class="days-grid" id="daysGrid"></div>
+
+        <!-- Export Button -->
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn export-btn" onclick="exportNotes()">📥 Exporter mes notes en PDF</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <div class="modal-day-number" id="modalDayNumber"></div>
+                <div class="modal-theme" id="modalTheme"></div>
+            </div>
+
+            <div id="modalBody"></div>
+
+            <div class="notes-section">
+                <div class="section-title">
+                    <span class="emoji">📝</span>
+                    <span>Mes notes personnelles</span>
+                </div>
+                <textarea class="notes-textarea" id="notesTextarea" placeholder="Écrivez vos réflexions, prières, révélations reçues..."></textarea>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="toggleDayCompletion()">
+                    <span id="completionBtnText">✓ Marquer comme accompli</span>
+                </button>
+                <button class="btn btn-secondary" onclick="saveNotes()">💾 Sauvegarder mes notes</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const programData = [
+            {
+                jour: 1,
+                theme: "Action de grâce",
+                objectif: "Remercier Dieu pour ses bienfaits de l'année passée : la vie, la famille, la santé, les finances, les relations, etc. Remercier Dieu parce qu'il est Dieu.",
+                rappel: "Même si l'année laisse un goût amer, il est essentiel d'être reconnaissant pour les aspects de notre vie où nous avons été bénis.",
+                action: "Dressez une liste écrite des bénédictions reçues en 2025. Relisez votre année pour identifier les moments de grâce divine et remerciez Dieu nominativement pour chaque personne qui a marqué positivement votre vie.",
+                versets: "Psaume 100:4-5 • Psaume 103:1-5 • 1 Thessaloniciens 5:16-18 • Colossiens 3:15-17"
+            },
+            {
+                jour: 2,
+                theme: "Repentance",
+                objectif: "Écrire une nouvelle page et effacer les accusations qui pèsent contre nous dans le monde spirituel.",
+                rappel: "Nous péchons par actions volontaires ou involontaires, par subconscient, par désobéissance. La repentance nous indique ce sur quoi travailler pour développer les fruits de l'Esprit.",
+                action: "Listez devant Dieu les péchés dont vous vous souvenez et nommez-les clairement. Confessez-les spécifiquement, recevez le pardon de Christ, et identifiez les domaines de transformation nécessaires pour marcher dans la sainteté cette année.",
+                versets: "1 Jean 1:9 • Psaume 51:1-12 • Psaume 32:5 • Actes 3:19 • 2 Chroniques 7:14",
+                video: {
+                    title: "The Courts of Heaven - Robert Henderson",
+                    url: "https://www.youtube.com/watch?v=tWZHWh5fbVM&t=5s"
+                }
+            },
+            {
+                jour: 3,
+                theme: "Invitation du Saint-Esprit",
+                objectif: "Solliciter l'assistance du Saint-Esprit et lui être sensible, pour avoir un temps de jeûne en accord avec la vision de Dieu pour nous.",
+                rappel: "L'Esprit sonde tout, même les profondeurs de Dieu (1 Corinthiens 2:10). Sans sa direction, nous risquons de prier selon nos désirs plutôt que selon sa volonté.",
+                action: "Invitez explicitement le Saint-Esprit à guider chaque jour de votre jeûne. Créez des moments de silence pour l'écouter. Soyez attentif aux impressions, aux Écritures qui vous interpellent, et aux directions qu'il souhaite vous donner pour cette année.",
+                versets: "Jean 14:26 • Jean 14:16-17 • Jean 16:13 • Actes 1:8 • Romains 8:26-27"
+            },
+            {
+                jour: 4,
+                theme: "Guérison de l'âme",
+                objectif: "Sortir des prisons intérieures et des blessures de l'âme accumulées l'année passée.",
+                rappel: "Le cœur n'a pas été créé pour garder la rancœur mais pour fonctionner avec l'amour. Pardonner ne veut pas dire renoncer à la justice.",
+                action: "Identifiez les personnes et situations qui ont blessé votre âme en 2025. Nommez les offenses devant Dieu, choisissez consciemment de pardonner, et déposez à Christ vos fardeaux. Demandez-lui de guérir les blessures profondes et de restaurer votre capacité à aimer.",
+                versets: "1 Pierre 2:24 • Matthieu 6:14-15 • Ésaïe 53:4-5 • Psaume 147:3 • Éphésiens 4:31-32",
+                video: {
+                    title: "Le protocole divin pour guérir de la dépression – Apôtre Yvan Castanou (Impact X)",
+                    url: "https://www.youtube.com/results?search_query=protocole+divin+depression+yvan+castanou"
+                }
+            },
+            {
+                jour: 5,
+                theme: "Combat spirituel et délivrance",
+                objectif: "Se libérer des liens spirituels et des forteresses mentales qui ont entravé votre avancement en 2025, et poser des fondations solides pour la nouvelle année.",
+                rappel: "Nous ne luttons pas contre la chair et le sang, mais contre les dominations spirituelles. Cette étape n'est pas un combat prolongé, mais une déclaration d'autorité en Christ pour entrer dans l'année avec liberté et clarté.",
+                action: "Identifiez les schémas répétitifs de défaite, les pensées négatives persistantes, et les blocages inexpliqués. Déclarez votre position en Christ et reprenez l'autorité qui vous a été donnée sur toute puissance de l'ennemi.",
+                versets: "Éphésiens 6:10-18 • 2 Corinthiens 10:3-5 • 1 Pierre 5:8-9 • Jacques 4:7 • Luc 10:19"
+            },
+            {
+                jour: 6,
+                theme: "Renouvellement de la pensée",
+                objectif: "Demander à marcher dans l'amour de Dieu et solliciter du Seigneur la grâce de l'aimer. Ce qui nous transforme, c'est de suivre Christ.",
+                rappel: "Celui qui a mes commandements et qui les garde, c'est celui qui m'aime (Jean 14:21). Les personnes qui croient ne sont pas nécessairement transformées, ce qui transforme, c'est de suivre.",
+                action: "Identifiez les schémas de pensée toxiques ou contraires à la Parole. Remplacez-les consciemment par les pensées de Christ. Demandez la grâce d'aimer Dieu davantage et de lui obéir, non par obligation, mais par amour. Méditez quotidiennement sur ses commandements.",
+                versets: "Romains 12:1-2 • Jean 8:31-32 • 2 Corinthiens 3:18 • Philippiens 4:8 • Colossiens 3:1-10"
+            },
+            {
+                jour: 7,
+                theme: "Vision et direction divine",
+                objectif: "Recevoir du Seigneur sa vision pour votre année. C'est l'occasion de lui présenter votre bilan de l'année passée et votre vision pour l'année à venir.",
+                rappel: "Nous avons tous une mission à accomplir sur terre. Restez à l'écoute de Dieu et ne vous focalisez pas uniquement sur vos projections personnelles.",
+                action: "Présentez à Dieu un bilan honnête de 2025 (réussites, échecs, leçons apprises). Exposez-lui vos projets pour 2026, puis demandez-lui : 'Quelle est TA vision pour moi cette année ?'. Notez les impressions, paroles prophétiques ou directions qu'il vous donne. Alignez vos plans sur sa volonté.",
+                versets: "Jérémie 29:11 • Proverbes 29:18 • Habakuk 2:2-3 • Éphésiens 2:10 • Philippiens 3:13-14"
+            },
+            {
+                jour: 8,
+                theme: "Obéissance : la grâce d'obéir",
+                objectif: "Obtenir la grâce du discernement et développer son sens de l'obéissance au Saint-Esprit.",
+                rappel: "Faites tout ce qu'il vous dira (Jean 2:5). Non seulement croire mais demeurer. Ce qu'Il dit de faire, fais-le. Tant qu'on ne fait pas ce que Dieu nous demande, on ne lui donne pas la place pour intervenir.",
+                action: "Identifiez les directives que Dieu vous a déjà données mais que vous n'avez pas encore exécutées. Décidez de lui obéir sans compter sur votre propre force. Demandez-lui la grâce d'entendre clairement sa voix et le courage d'agir immédiatement quand il parle.",
+                versets: "Jean 14:15 • Jacques 1:22-25 • 1 Samuel 15:22 • Deutéronome 28:1-2 • Luc 6:46-49",
+                video: {
+                    title: "The power of complete obedience – Apostle Joshua Selman",
+                    url: "https://www.youtube.com/watch?v=ZYymscAIhcw"
+                }
+            },
+            {
+                jour: 9,
+                theme: "[Thème personnalisé]",
+                customizable: true,
+                objectif: "",
+                rappel: "",
+                action: "",
+                versets: ""
+            },
+            {
+                jour: 10,
+                theme: "[Thème personnalisé]",
+                customizable: true,
+                objectif: "",
+                rappel: "",
+                action: "",
+                versets: ""
+            },
+            {
+                jour: 11,
+                theme: "[Thème personnalisé]",
+                customizable: true,
+                objectif: "",
+                rappel: "",
+                action: "",
+                versets: ""
+            },
+            {
+                jour: 12,
+                theme: "[Thème personnalisé]",
+                customizable: true,
+                objectif: "",
+                rappel: "",
+                action: "",
+                versets: ""
+            },
+            {
+                jour: 13,
+                theme: "Déclaration prophétique - Croyances",
+                objectif: "Déclarer sur vos croyances, votre mindset et votre relation avec Dieu.",
+                rappel: "Nous devenons ce que nous croyons. Nos paroles ont le pouvoir de créer notre réalité spirituelle.",
+                action: "Déclarez à voix haute : 'Je crois en la fidélité de Dieu. Je renouvelle mon engagement à la prière quotidienne, à l'étude biblique et aux temps de retraite spirituelle. Ma foi grandira cette année.'",
+                versets: "Proverbes 23:7 • Psaume 63:1-8 • Marc 11:22-24 • Matthieu 17:20 • Hébreux 11:6"
+            },
+            {
+                jour: 14,
+                theme: "Déclaration prophétique - Projets",
+                objectif: "Déclarer sur vos projets et vos finances.",
+                rappel: "Dieu pourvoit à tous nos besoins selon sa richesse, avec gloire, en Jésus-Christ (Philippiens 4:19).",
+                action: "Présentez vos projets à Dieu (voiture, immobilier, business, carrière). Déclarez : 'Mes projets prospèrent car Dieu les dirige. Mes finances sont entre les mains de Dieu. Il ouvre les portes que personne ne peut fermer.'",
+                versets: "Proverbes 16:3 • Philippiens 4:19 • Matthieu 6:33 • 3 Jean 1:2 • Malachie 3:10-12",
+                video: {
+                    title: "Effective prayer dynamics – Apostle Joshua Selman",
+                    url: "https://www.youtube.com/watch?v=3dlKIjEyzcs"
+                }
+            },
+            {
+                jour: 15,
+                theme: "Déclaration prophétique - Famille",
+                objectif: "Déclarer sur votre famille et votre vie sentimentale.",
+                rappel: "Si l'Éternel ne bâtit la maison, ceux qui la bâtissent travaillent en vain (Psaume 127:1).",
+                action: "Si vous êtes célibataire, déclarez : 'Dieu me prépare et prépare mon conjoint(e). Au temps parfait, nous nous rencontrerons.' Si vous êtes en couple/marié(e) : 'Mon mariage/couple prospère. L'amour de Christ règne dans notre relation.'",
+                versets: "Psaume 127:1 • Proverbes 3:5-6 • Proverbes 18:22 • Éphésiens 5:25-33 • Psaume 84:12",
+                video: {
+                    title: "Our Daily Bread – Apostle Joshua Selman",
+                    url: "https://www.youtube.com/watch?v=_rGJ7W4wEz4"
+                }
+            },
+            {
+                jour: 16,
+                theme: "Déclaration prophétique - Santé",
+                objectif: "Déclarer sur votre santé physique et vos relations.",
+                rappel: "Votre corps est le temple du Saint-Esprit. Prenez-en soin avec sagesse.",
+                action: "Déclarez : 'Mon corps est en bonne santé. Je prends soin de mon temple. Mes relations sont saines et édifiantes. Dieu me connecte aux bonnes personnes cette année.'",
+                versets: "3 Jean 1:2 • Proverbes 27:17 • 1 Corinthiens 6:19-20 • Psaume 103:2-5 • Ésaïe 40:31",
+                video: {
+                    title: "The Gift of Men – Apostle Joshua Selman",
+                    url: "https://www.youtube.com/watch?v=qY4gxi5Rl3o"
+                }
+            },
+            {
+                jour: 17,
+                theme: "Intercession territoriale",
+                objectif: "Soumettre notre territoire à Christ et proclamer la lumière sur notre lieu de vie.",
+                rappel: "Dieu appelle son peuple à prier pour l'endroit où il vit, même quand le contexte est difficile. Dieu cherche quelqu'un qui se lève pour empêcher la destruction et attirer la miséricorde (Ézéchiel 22:30).",
+                action: "Identifiez les défis spirituels, sociaux et moraux de votre ville/région. Repentez-vous du mal commis sur ce territoire et priez le Sang de Christ pour l'expiation des péchés. Déclarez la seigneurie de Christ et intercédez pour les autorités locales, les écoles, les églises et les familles.",
+                versets: "2 Chroniques 7:14 • Psaume 122:6-9 • Jérémie 29:7 • 1 Timothée 2:1-2 • Ésaïe 62:6-7"
+            },
+            {
+                jour: 18,
+                theme: "Intercession nation",
+                objectif: "Soumettre notre nation à Christ et proclamer la lumière sur notre pays.",
+                rappel: "Dieu appelle son peuple à prier pour l'endroit où il vit, même quand le contexte est difficile. Nous sommes appelés à prier pour ceux qui gouvernent (1 Timothée 2:1-2).",
+                action: "Intercédez pour les dirigeants de votre nation (président, gouvernement, parlementaires). Priez pour la justice, la paix, la sagesse dans les décisions nationales. Repentez-vous des péchés collectifs du pays et demandez un réveil spirituel. Déclarez que votre nation accomplira les desseins de Dieu.",
+                versets: "1 Timothée 2:1-4 • Proverbes 14:34 • Psaume 33:12 • Daniel 2:21 • 2 Chroniques 7:14"
+            },
+            {
+                jour: 19,
+                theme: "Intercession internationale",
+                objectif: "Prier pour les nations et le réveil mondial.",
+                rappel: "Dieu désire que tous les hommes soient sauvés et parviennent à la connaissance de la vérité. Le champ de mission, c'est le monde.",
+                action: "Intercédez pour les nations en crise, les pays persécutés pour leur foi, et les zones où l'Évangile n'est pas encore parvenu. Priez pour les missionnaires et les évangélistes. Déclarez un réveil mondial.",
+                versets: "Ésaïe 62:6-7 • Psaume 2:8 • Psaume 67:1-7 • Habakuk 2:14 • Matthieu 28:19-20 • Actes 1:8"
+            },
+            {
+                jour: 20,
+                theme: "Louange",
+                objectif: "Louer Dieu en signe de foi car vous croyez qu'Il vous a accordé sa faveur pendant ces jours de prière.",
+                rappel: "Tout ce que vous demanderez en priant, croyez que vous l'avez reçu et cela vous sera accordé (Marc 11:24). La louange est une déclaration de foi avant même de voir la manifestation.",
+                action: "Louez Dieu comme si tout ce pour quoi vous avez prié était déjà accompli. Célébrez ses promesses par le chant, la danse, les cris de joie. Déclarez sa fidélité et magnifiez son nom. Entrez dans une atmosphère de victoire anticipée.",
+                versets: "Psaume 150:1-6 • Psaume 100:1-5 • Psaume 34:1-3 • Hébreux 13:15 • Éphésiens 5:19-20"
+            },
+            {
+                jour: 21,
+                theme: "Actions de grâce",
+                objectif: "Faire un acte de foi de remerciements pour clôturer le jeûne.",
+                rappel: "Partout où je rappellerai mon nom, je viendrai à toi, et je te bénirai (Exode 20:24). L'action de grâce attire la présence et la bénédiction de Dieu.",
+                action: "Remerciez Dieu pour ce qu'il a accompli durant ce jeûne (révélations, guérisons, délivrances, directions reçues). Élevez-lui un autel de reconnaissance par la louange et l'adoration. Profitez-en pour semer sous la direction du Saint-Esprit en offrande de gratitude.",
+                versets: "Psaume 107:1 • Psaume 118:1 • 1 Chroniques 16:34 • Colossiens 3:15-17 • Philippiens 4:6"
+            }
+        ];
+
+        let currentDay = null;
+        let completedDays = JSON.parse(localStorage.getItem('completedDays') || '[]');
+        let notes = JSON.parse(localStorage.getItem('dayNotes') || '{}');
+
+        function initApp() {
+            renderDaysGrid();
+            updateProgress();
+        }
+
+        function renderDaysGrid() {
+            const grid = document.getElementById('daysGrid');
+            grid.innerHTML = '';
+
+            programData.forEach(day => {
+                const card = document.createElement('div');
+                const customClass = day.customizable ? 'customizable' : '';
+                card.className = `day-card ${completedDays.includes(day.jour) ? 'completed' : ''} ${customClass}`;
+                card.onclick = () => openDay(day.jour);
+                
+                card.innerHTML = `
+                    ${completedDays.includes(day.jour) ? '<div class="check-icon">✓</div>' : ''}
+                    <div class="day-number">Jour ${day.jour}</div>
+                    <div class="day-theme">${day.theme}</div>
+                    ${day.customizable ? '<div class="customizable-badge">À personnaliser</div>' : ''}
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function openDay(dayNumber) {
+            currentDay = dayNumber;
+            const day = programData.find(d => d.jour === dayNumber);
+            const customData = JSON.parse(localStorage.getItem('customDayData') || '{}');
+            
+            document.getElementById('modalDayNumber').textContent = `JOUR ${day.jour}`;
+            document.getElementById('modalTheme').textContent = day.customizable && customData[dayNumber]?.theme ? customData[dayNumber].theme : day.theme;
+            
+            let bodyHTML = '';
+
+            if (day.customizable) {
+                // Mode personnalisable
+                const saved = customData[dayNumber] || {};
+                bodyHTML = `
+                    <div class="custom-input-section">
+                        <div class="section-title">
+                            <span class="emoji">✏️</span>
+                            <span>Personnalisez ce jour selon vos besoins spirituels</span>
+                        </div>
+                        
+                        <label style="display: block; margin-top: 15px; font-weight: bold; color: #E67E22;">Thème :</label>
+                        <input type="text" class="custom-input" id="customTheme" placeholder="Ex: Finances, Santé mentale, Ministère..." value="${saved.theme || ''}" style="min-height: auto;">
+                        
+                        <label style="display: block; margin-top: 15px; font-weight: bold; color: #E67E22;">🎯 Objectif :</label>
+                        <textarea class="custom-input" id="customObjectif" placeholder="Quel est votre objectif pour ce jour ?" rows="3">${saved.objectif || ''}</textarea>
+                        
+                        <label style="display: block; margin-top: 15px; font-weight: bold; color: #E67E22;">💡 Rappel biblique :</label>
+                        <textarea class="custom-input" id="customRappel" placeholder="Quel principe biblique guide ce thème ?" rows="3">${saved.rappel || ''}</textarea>
+                        
+                        <label style="display: block; margin-top: 15px; font-weight: bold; color: #E67E22;">✅ Actions concrètes :</label>
+                        <textarea class="custom-input" id="customAction" placeholder="Quelles actions allez-vous entreprendre ?" rows="3">${saved.action || ''}</textarea>
+                        
+                        <label style="display: block; margin-top: 15px; font-weight: bold; color: #E67E22;">📖 Versets :</label>
+                        <textarea class="custom-input" id="customVersets" placeholder="Ex: Jean 3:16, Psaume 23, etc." rows="2">${saved.versets || ''}</textarea>
+                        
+                        <button class="btn save-custom-btn" onclick="saveCustomDay()" style="margin-top: 15px;">
+                            💾 Sauvegarder ma personnalisation
+                        </button>
+                    </div>
+                `;
+
+                // Afficher les données sauvegardées si elles existent
+                if (saved.objectif) {
+                    bodyHTML += `
+                        <div style="margin-top: 20px; padding: 15px; background: #E8F5E9; border-radius: 10px;">
+                            <h4 style="color: #27AE60; margin-bottom: 10px;">📋 Aperçu de votre personnalisation :</h4>
+                            ${saved.objectif ? `<p><strong>Objectif :</strong> ${saved.objectif}</p>` : ''}
+                            ${saved.rappel ? `<p><strong>Rappel :</strong> ${saved.rappel}</p>` : ''}
+                            ${saved.action ? `<p><strong>Action :</strong> ${saved.action}</p>` : ''}
+                            ${saved.versets ? `<p><strong>Versets :</strong> ${saved.versets}</p>` : ''}
+                        </div>
+                    `;
+                }
+            } else {
+                // Mode normal avec contenu prédéfini
+                bodyHTML = `
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="emoji">🎯</span>
+                            <span>Objectif</span>
+                        </div>
+                        <div class="section-content">${day.objectif}</div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="emoji">💡</span>
+                            <span>Rappel</span>
+                        </div>
+                        <div class="section-content rappel">${day.rappel}</div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="emoji">✅</span>
+                            <span>Action</span>
+                        </div>
+                        <div class="section-content">${day.action}</div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="emoji">📖</span>
+                            <span>Versets</span>
+                        </div>
+                        <div class="section-content versets">${day.versets}</div>
+                    </div>
+                `;
+
+                if (day.video) {
+                    bodyHTML += `
+                        <div class="section">
+                            <div class="section-title">
+                                <span class="emoji">🎥</span>
+                                <span>Enseignement recommandé</span>
+                            </div>
+                            <a href="${day.video.url}" target="_blank" class="video-link">
+                                ▶ ${day.video.title}
+                            </a>
+                        </div>
+                    `;
+                }
+            }
+
+            // Ajouter les boutons de ressources pour tous les jours
+            const searchQuery = day.customizable && customData[dayNumber]?.theme ? 
+                encodeURIComponent(customData[dayNumber].theme + ' prière chrétienne') : 
+                encodeURIComponent(day.theme + ' prière chrétienne');
+            
+            bodyHTML += `
+                <div class="resources-section">
+                    <div class="section-title">
+                        <span class="emoji">🎵</span>
+                        <span>Ressources pour votre temps de prière</span>
+                    </div>
+                    <p style="color: #27AE60; margin-top: 10px;">Trouvez des enseignements, musiques d'adoration et podcasts pour enrichir votre méditation</p>
+                    <div class="resource-buttons">
+                        <a href="https://www.youtube.com/results?search_query=${searchQuery}" target="_blank" class="resource-btn youtube-btn">
+                            <span>▶</span>
+                            <span>Rechercher sur YouTube</span>
+                        </a>
+                        <a href="https://open.spotify.com/search/${searchQuery}" target="_blank" class="resource-btn spotify-btn">
+                            <span>🎵</span>
+                            <span>Rechercher sur Spotify</span>
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalBody').innerHTML = bodyHTML;
+            document.getElementById('notesTextarea').value = notes[dayNumber] || '';
+            
+            updateCompletionButton();
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function toggleDayCompletion() {
+            const index = completedDays.indexOf(currentDay);
+            if (index > -1) {
+                completedDays.splice(index, 1);
+            } else {
+                completedDays.push(currentDay);
+            }
+            localStorage.setItem('completedDays', JSON.stringify(completedDays));
+            renderDaysGrid();
+            updateProgress();
+            updateCompletionButton();
+        }
+
+        function updateCompletionButton() {
+            const btn = document.getElementById('completionBtnText');
+            if (completedDays.includes(currentDay)) {
+                btn.textContent = '↺ Marquer comme non accompli';
+            } else {
+                btn.textContent = '✓ Marquer comme accompli';
+            }
+        }
+
+        function saveNotes() {
+            const noteText = document.getElementById('notesTextarea').value;
+            notes[currentDay] = noteText;
+            localStorage.setItem('dayNotes', JSON.stringify(notes));
+            alert('✓ Notes sauvegardées avec succès !');
+        }
+
+        function saveCustomDay() {
+            const customData = JSON.parse(localStorage.getItem('customDayData') || '{}');
+            
+            customData[currentDay] = {
+                theme: document.getElementById('customTheme').value,
+                objectif: document.getElementById('customObjectif').value,
+                rappel: document.getElementById('customRappel').value,
+                action: document.getElementById('customAction').value,
+                versets: document.getElementById('customVersets').value
+            };
+
+            localStorage.setItem('customDayData', JSON.stringify(customData));
+            alert('✓ Personnalisation sauvegardée avec succès !');
+            
+            // Rafraîchir l'affichage
+            renderDaysGrid();
+            openDay(currentDay);
+        }
+
+        function updateProgress() {
+            const completed = completedDays.length;
+            const remaining = 21 - completed;
+            const percent = Math.round((completed / 21) * 100);
+
+            document.getElementById('completedDays').textContent = completed;
+            document.getElementById('remainingDays').textContent = remaining;
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+            document.getElementById('progressFill').textContent = `${percent}%`;
+        }
+
+        function exportNotes() {
+            let exportText = '='.repeat(60) + '\n';
+            exportText += 'PROGRAMME DE JEÛNE 21 JOURS - MES NOTES\n';
+            exportText += '='.repeat(60) + '\n\n';
+            exportText += `Date d'export : ${new Date().toLocaleDateString('fr-FR')}\n`;
+            exportText += `Jours accomplis : ${completedDays.length}/21\n\n`;
+
+            programData.forEach(day => {
+                const hasNotes = notes[day.jour];
+                const isCompleted = completedDays.includes(day.jour);
+                
+                if (hasNotes || isCompleted) {
+                    exportText += '-'.repeat(60) + '\n';
+                    exportText += `JOUR ${day.jour} - ${day.theme} ${isCompleted ? '✓' : ''}\n`;
+                    exportText += '-'.repeat(60) + '\n';
+                    
+                    if (hasNotes) {
+                        exportText += `\n${notes[day.jour]}\n\n`;
+                    } else {
+                        exportText += '\n(Aucune note)\n\n';
+                    }
+                }
+            });
+
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `jeune_21_jours_notes_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Initialize app
+        initApp();
+    </script>
+</body>
+</html>
